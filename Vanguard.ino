@@ -11,7 +11,7 @@
 
 #define BUTTON_PIN 0
 
-// Data wire is plugged into port 2 on the Arduino
+// Data wire is plugged into port 23 on the ESP32
 #define ONE_WIRE_BUS 23
 
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
@@ -45,8 +45,8 @@ char tempCLimit[3] = "25";
 char vBattLimit[5] = "11.8";
 char vHouseLimit[5] = "11.8";
 
-String chat_id2 = "725925511";
-String chat_id = "1658176466";
+String chat_id2 = "-1";
+String chat_id = "-1";
 char chatId[20]  = "-1";
 
 //flag for saving data
