@@ -45,7 +45,8 @@ char tempCLimit[3] = "25";
 char vBattLimit[5] = "11.8";
 char vHouseLimit[5] = "11.8";
 
-String chat_id = "725925511";
+String chat_id2 = "725925511";
+String chat_id = "1658176466";
 char chatId[20]  = "-1";
 
 //flag for saving data
@@ -60,7 +61,7 @@ void handleNewMessages(int numNewMessages)
   Serial.println(numNewMessages);
 
   String answer = "";
-  if (bot.messages[0].chat_id == "725925511")
+  if ((bot.messages[0].chat_id == chat_id2)||(bot.messages[0].chat_id == chat_id))
   {
     for (int i = 0; i < numNewMessages; i++)
     {
@@ -77,6 +78,12 @@ void handleNewMessages(int numNewMessages)
       answer += "V";
 
       bot.sendMessage(chat_id, answer, "Markdown");
+      bot.sendMessage(chat_id2, answer, "Markdown");
+      Serial.print("chat_id: ");
+      Serial.println(chat_id);
+      Serial.print("chat_id: ");
+      Serial.println(chat_id2);
+
     }
   }
 }
@@ -84,7 +91,7 @@ void handleNewMessages(int numNewMessages)
 void sendMessage()
 {
   telegramMessage &msg = bot.messages[0];
-  Serial.println("Received " + msg.text);
+  Serial.println("M-Received " + msg.text);
 
   String answer = "Temperature: " ;
   answer.concat( tempC);
@@ -95,8 +102,14 @@ void sendMessage()
   answer += "Vdom: ";
   answer.concat(v2);
   answer += "V";
-  //Serial.println("Send Message From");
-
+  Serial.print("M-chat_id: ");
+  Serial.println(chat_id);
+  bot.sendMessage(chat_id, answer, "Markdown");
+  delay(1000);
+  bot.sendMessage(chat_id2, answer, "Markdown");
+  Serial.print("M-chat_id: ");
+  Serial.println(chat_id2);
+  Serial.println(BOT_TOKEN);
 }
 
 
@@ -258,18 +271,18 @@ void setup()
   */
   Serial.print("\nWiFi connected. IP address: ");
   Serial.println(WiFi.localIP());
-/*
-  Serial.print("Retrieving time: ");
-  configTime(0, 0, "pool.ntp.org"); // get UTC time via NTP
-  time_t now = time(nullptr);
-  while (now < 24 * 3600)
-  {
-    Serial.print(".");
-    delay(100);
-    now = time(nullptr);
-  }
-  Serial.println(now);
-*/
+  /*
+    Serial.print("Retrieving time: ");
+    configTime(0, 0, "pool.ntp.org"); // get UTC time via NTP
+    time_t now = time(nullptr);
+    while (now < 24 * 3600)
+    {
+      Serial.print(".");
+      delay(100);
+      now = time(nullptr);
+    }
+    Serial.println(now);
+  */
   bot_setup();
   temp_setup();
   temp_loop();
@@ -280,12 +293,12 @@ void setup()
     float fBattLimit = atof(vBattLimit);
     float fHouseLimit = atof(vHouseLimit);
   */
-/*  
-  v1 = 10.8;
-  v2 = 12.8;
-  tempC = 24;
-*/
-  
+  /*
+    v1 = 10.8;
+    v2 = 12.8;
+    tempC = 24;
+  */
+
   Serial.println(v1);
   Serial.println(v2);
   Serial.println(tempC);
