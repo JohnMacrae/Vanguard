@@ -39,13 +39,16 @@ float vHouse = 0;
 float v1 = 0;
 float v2 = 0;
 
-char botToken[40];
+char botToken[60];
 
 char tempCLimit[3] = "25";
 char vBattLimit[5] = "11.8";
 char vHouseLimit[5] = "11.8";
+char sleepTime[5] = "300";
 
-String chat_id2 = "-1";
+long lSleepTime = 0;
+
+String chat_id2 = "725925511";
 String chat_id = "-1";
 char chatId[20]  = "-1";
 
@@ -53,20 +56,21 @@ char chatId[20]  = "-1";
 bool shouldSaveConfig = false;
 
 WiFiClientSecure secured_client;
-UniversalTelegramBot bot(BOT_TOKEN, secured_client);
+UniversalTelegramBot bot(botToken, secured_client);
 
 void handleNewMessages(int numNewMessages)
 {
   Serial.print("handleNewMessages ");
   Serial.println(numNewMessages);
 
-  String answer = "";
-  if ((bot.messages[0].chat_id == chat_id2)||(bot.messages[0].chat_id == chat_id))
+  String answer = "handle message \n";
+  
+  if ((bot.messages[0].chat_id == chat_id2) || (bot.messages[0].chat_id == chat_id))
   {
     for (int i = 0; i < numNewMessages; i++)
     {
       telegramMessage &msg = bot.messages[i];
-      Serial.println("Received " + msg.text);
+      Serial.println("Answering message " +  String(i)+ msg.text);
       answer = "Temperature: " ;
       answer.concat( tempC);
       answer.concat("\n");
@@ -91,7 +95,7 @@ void handleNewMessages(int numNewMessages)
 void sendMessage()
 {
   telegramMessage &msg = bot.messages[0];
-  Serial.println("M-Received " + msg.text);
+  Serial.println("Sending Parameters");
 
   String answer = "Temperature: " ;
   answer.concat( tempC);
@@ -109,7 +113,7 @@ void sendMessage()
   bot.sendMessage(chat_id2, answer, "Markdown");
   Serial.print("M-chat_id: ");
   Serial.println(chat_id2);
-  Serial.println(BOT_TOKEN);
+  Serial.println(botToken);
 }
 
 
@@ -150,6 +154,7 @@ void setupSpiffs() {
           strcpy(vBattLimit, json["vBattLimit"]);
           strcpy(vHouseLimit, json["vHouseLimit"]);
           strcpy(chatId, json["chatId"]);
+          strcpy(sleepTime, json["sleepTime"]);
 
         } else {
           Serial.println("failed to load json config");
@@ -189,6 +194,8 @@ void setup()
   WiFiManagerParameter custom_batt_limit("vBattLimit", "Veh Batt Limit", vBattLimit, 4);
   WiFiManagerParameter custom_house_limit("vHouseLimit", "House Batt Limit", vHouseLimit, 4);
   WiFiManagerParameter custom_chat_id("chatId", "Chat ID", chatId, 20);
+  WiFiManagerParameter custom_sleepTime("sleepTime", "Sleep Time", sleepTime, 5);
+
 
   //add all your parameters here
   wm.addParameter(&custom_bot_token);
@@ -196,13 +203,14 @@ void setup()
   wm.addParameter(&custom_batt_limit);
   wm.addParameter(&custom_house_limit);
   wm.addParameter(&custom_chat_id);
+  wm.addParameter(&custom_sleepTime);
 
   //reset settings - wipe credentials for testing
   //wm.resetSettings();
-
+delay (2000);
   if (digitalRead(BUTTON_PIN) == LOW) {
     Serial.println("Entering Forced Config Mode");
-    if (!wm.startConfigPortal("SmarterDisplay", "everyday")) {
+    if (!wm.startConfigPortal("Vanguard", "everyday")) {
       Serial.println("failed to connect and hit timeout");
       delay(3000);
       //reset and try again, or maybe put it to deep sleep
@@ -225,11 +233,13 @@ void setup()
   strcpy(vHouseLimit, custom_house_limit.getValue());
   strcpy(vBattLimit, custom_batt_limit.getValue());
   strcpy(chatId, custom_chat_id.getValue());
+  strcpy(sleepTime, custom_sleepTime.getValue());
 
   float ftempLimit = atof(tempCLimit);
   float fBattLimit = atof(vBattLimit);
   float fHouseLimit = atof(vHouseLimit);
-
+  lSleepTime = atol(sleepTime);
+  chat_id = String(chatId);
   if (shouldSaveConfig) {
     Serial.println("saving config");
     DynamicJsonDocument  json(200);
@@ -238,6 +248,7 @@ void setup()
     json["vHouseLimit"]   = vHouseLimit;
     json["vBattLimit"]   = vBattLimit;
     json["chatId"]   = chatId;
+    json["sleepTime"]   = sleepTime;
 
     File configFile = SPIFFS.open("/config.json", "w");
     if (!configFile) {
@@ -283,6 +294,9 @@ void setup()
     }
     Serial.println(now);
   */
+  Serial.print("ChatID check: ");
+  Serial.println(chatId);
+
   bot_setup();
   temp_setup();
   temp_loop();
