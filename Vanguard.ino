@@ -58,6 +58,8 @@ long lSleepTime = 0;
 
 float v1 = 0;
 float v2 = 0;
+bool statusFlag = false;
+
 
 WiFiClientSecure secured_client;
 UniversalTelegramBot bot(String(botToken), secured_client);
@@ -160,7 +162,7 @@ void setup()
   IAS.addField(vBattLimit, "vBattLimit", 11.8, 'N');
   IAS.addField(vHouseLimit, "vHouseLimit", 11.8, 'N');
   IAS.addField(chat_id, "chat_id", 20, 'T');
-  IAS.addField(ledPin, "sleepTime", 5, 'I');
+  IAS.addField(sleepTime, "sleepTime", 5, 'I');
 
   // You can configure callback functions that can give feedback to the app user about the current state of the application.
   // In this example we use serial print to demonstrate the call backs. But you could use leds etc.
@@ -242,12 +244,15 @@ void loop()
       Serial.println("got response");
       handleNewMessages(numNewMessages);
       numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+      statusFlag = true;
     }
 
     bot_lasttime = millis();
   }
-  if (millis() > LOOP_WAIT)//Wait for a while for the user to press a button
+  if ((millis() > LOOP_WAIT) || (statusFlag == false)) //Wait for a while for the user to press a button
   {
     sleep_setup();
+  } else {
+    // We got a status message - loop for a minute
   }
 }
