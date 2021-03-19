@@ -10,7 +10,6 @@ IOTAppStory IAS(COMPDATE, MODEBUTTON);                      // Initialize IotApp
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-//  #define BUTTON_PIN 0
 // Data wire is plugged into port 23 on the ESP32
 #define ONE_WIRE_BUS 23
 
