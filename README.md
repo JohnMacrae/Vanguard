@@ -3,5 +3,5 @@ Camper Van Temperature Voltage monitor for ESP32. USes the internal ADC on 2 pin
 
 The app spends most of its time in deep sleep. When it wakes up, it checks the voltages and temperature. Occasionally it checks to see if there are any updates. 
 
-</b>Configuration</b>
+</b>Configuration.</b></p>
 To wake up the app, send a /status message and wait till it wakes up and returns the ststus. Press the right button for 8 seconds and it will enter the configuration mode. Find the device on your network. (Fing is a useful app for this). Enter the IP address from fing into your browser and configure the parameters. It is recommended only to alter the voltage and temperature parameters and maybe the sleep interval. When you are finished, make sure to exit configuration mode although it will time out on its own after a while.
