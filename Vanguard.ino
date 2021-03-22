@@ -1,7 +1,7 @@
 #define COMPDATE __DATE__ __TIME__
 #define MODEBUTTON 0                                        // Button pin on the esp for selecting modes. D3 for the Wemos!
-#define LOOP_WAIT 60000
-
+#define LOOP_WAIT 30000
+#define LED_BUILTIN 2
 #include <IOTAppStory.h>                                    // IotAppStory.com library
 IOTAppStory IAS(COMPDATE, MODEBUTTON);                      // Initialize IotAppStory
 
@@ -35,7 +35,6 @@ String chipId;
 
 char* lbl         = "Vanguard";
 char* updInt      = "7200";
-char* ledPin      = "2";
 
 char* botToken = "11:aa";
 char* tempCLimit = "25";
@@ -141,7 +140,7 @@ void bot_setup()
 
 void setup()
 {
-
+  pinMode(LED_BUILTIN, OUTPUT);
   // create a unique deviceName for classroom situations (deviceName-123)
   chipId      = String(ESP_GETCHIPID);
   chipId      = "-" + chipId.substring(chipId.length() - 3);
@@ -149,12 +148,12 @@ void setup()
 
   /* TIP! delete lines below when not used */
   IAS.preSetDeviceName(deviceName);                         // preset deviceName this is also your MDNS responder: http://virginsoil-123.local
-  IAS.preSetAutoUpdate(false);                            // automaticUpdate (true, false)
+  IAS.preSetAutoUpdate(true);                            // automaticUpdate (true, false)
   //IAS.preSetAutoConfig(false);                            // automaticConfig (true, false)
   /* TIP! Delete Wifi cred. when you publish your App. */
 
-  IAS.addField(updInt, "Interval", 8, 'I');
-  IAS.addField(ledPin, "ledPin", 2, 'P');
+  IAS.addField(updInt, "Update Interval", 8, 'I');
+  //IAS.addField(ledPin, "ledPin", 2, 'P');
   //  IAS.addField(timeZone, "Timezone", 48, 'Z');
 
   IAS.addField(botToken, "botToken", 60, 'T');
@@ -162,7 +161,7 @@ void setup()
   IAS.addField(vBattLimit, "vBattLimit", 11.8, 'N');
   IAS.addField(vHouseLimit, "vHouseLimit", 11.8, 'N');
   IAS.addField(chat_id, "chat_id", 20, 'T');
-  IAS.addField(sleepTime, "sleepTime", 5, 'I');
+  IAS.addField(sleepTime, "sleepTime", 5, 'N');
 
   // You can configure callback functions that can give feedback to the app user about the current state of the application.
   // In this example we use serial print to demonstrate the call backs. But you could use leds etc.
@@ -229,6 +228,8 @@ void setup()
     sendMessage();
   }
   Serial.println("End setup");
+
+  digitalWrite(LED_BUILTIN, 255);
 }
 
 void loop()
@@ -244,12 +245,11 @@ void loop()
       Serial.println("got response");
       handleNewMessages(numNewMessages);
       numNewMessages = bot.getUpdates(bot.last_message_received + 1);
-      statusFlag = true;
     }
 
     bot_lasttime = millis();
   }
-  if ((millis() > LOOP_WAIT) || (statusFlag == false)) //Wait for a while for the user to press a button
+  if (millis() > LOOP_WAIT) //Wait for a while for the user to press a button
   {
     sleep_setup();
   } else {

@@ -58,8 +58,8 @@ void sleep_setup() {
   */
 
   //  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
-  esp_sleep_enable_timer_wakeup(lSleepTime * 60 * uS_TO_S_FACTOR);
-  Serial.println("Setup ESP32 to sleep for every " + String(lSleepTime * 60) +
+  esp_sleep_enable_timer_wakeup(lSleepTime * uS_TO_S_FACTOR);
+  Serial.println("Setup ESP32 to sleep for every " + String(lSleepTime) +
                  " Seconds");
 
   /*
